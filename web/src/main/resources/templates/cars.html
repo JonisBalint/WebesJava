@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="hu" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Autónyilvántartó</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script defer th:src="@{/js/app.js}"></script>
+</head>
+<body>
+<main class="page" id="car-page" th:attr="data-api-url=@{/api/cars}">
+    <header class="page-header">
+        <h1>Autónyilvántartó</h1>
+        <div class="header-actions">
+            <button class="button button-secondary" type="button" id="new-rest-car">+ Új autó (REST)</button>
+            <a class="button" th:href="@{/cars/new}">+ Új autó</a>
+        </div>
+    </header>
+
+    <section class="card list-controls" aria-label="Keresés">
+        <form id="brand-search" class="field">
+            <label for="search-brand">Márka</label>
+            <div class="search-field">
+                <input id="search-brand" name="brand" type="search" placeholder="Pl. Subaru" required>
+                <button class="button button-secondary" type="submit">Keresés</button>
+            </div>
+        </form>
+        <form id="id-search" class="field">
+            <label for="search-id">Azonosító</label>
+            <div class="search-field">
+                <input id="search-id" name="carId" type="search" required>
+                <button class="button button-secondary" type="submit">Lekérés</button>
+            </div>
+        </form>
+        <button class="button button-secondary" type="button" id="all-cars">Összes autó</button>
+    </section>
+    <p id="list-message" class="feedback list-feedback" role="status"></p>
+
+    <section class="card" aria-label="Autók listája">
+        <p id="empty-list" class="empty-state" th:hidden="${!#lists.isEmpty(cars)}">Az autók listája üres.</p>
+        <div id="car-table" class="table-scroll" th:hidden="${#lists.isEmpty(cars)}"
+             tabindex="0" role="region" aria-label="Autók táblázata">
+            <table>
+                <thead>
+                <tr>
+                    <th scope="col">Márka</th>
+                    <th scope="col">Modell</th>
+                    <th scope="col" class="number-column">Lóerő</th>
+                    <th scope="col">Gyártási dátum</th>
+                    <th scope="col">Üzemanyag</th>
+                    <th scope="col">Azonosító</th>
+                    <th scope="col">Műveletek</th>
+                </tr>
+                </thead>
+                <tbody id="car-rows">
+                <th:block th:each="car : ${cars}">
+                    <tr th:replace="~{::carRow(${car})}"></tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <template id="car-row">
+        <tr th:fragment="carRow(car)" th:attr="data-id=${car?.id}">
+            <th scope="row" data-field="brand" th:text="${car?.brand}"></th>
+            <td data-field="model" th:text="${car?.model}"></td>
+            <td class="number-column" data-field="horsepower" th:text="${car?.horsepower}"></td>
+            <td class="date-column" data-field="manufactureDate" th:text="${car?.manufactureDate}"></td>
+            <td><span class="fuel-badge" data-field="fuelType" th:classappend="${car?.fuelType}" th:text="${car?.fuelType}"></span></td>
+            <td><span class="car-id" data-field="id" th:title="${car?.id}" th:text="${car?.id}"></span></td>
+            <td>
+                <div class="row-actions">
+                    <button class="button button-secondary button-small" type="button" data-action="edit">Szerkesztés</button>
+                    <button class="button button-danger button-small" type="button" data-action="delete">Törlés</button>
+                </div>
+            </td>
+        </tr>
+    </template>
+
+    <dialog id="car-editor" class="card car-editor" aria-labelledby="editor-title">
+        <form id="editor-form" class="car-form">
+            <h2 id="editor-title"></h2>
+            <p id="editor-message" class="feedback" role="status"></p>
+            <div class="field">
+                <label for="rest-brand">Márka</label>
+                <input id="rest-brand" name="brand" type="text" required autofocus>
+            </div>
+            <div class="field">
+                <label for="rest-model">Modell</label>
+                <input id="rest-model" name="model" type="text" required>
+            </div>
+            <div class="field">
+                <label for="rest-horsepower">Lóerő</label>
+                <input id="rest-horsepower" name="horsepower" type="number" min="1" step="1" required>
+            </div>
+            <div class="field">
+                <label for="rest-manufacture-date">Gyártási dátum</label>
+                <input id="rest-manufacture-date" name="manufactureDate" type="date" required>
+            </div>
+            <div class="field">
+                <label for="rest-fuel-type">Üzemanyag</label>
+                <select id="rest-fuel-type" name="fuelType" required>
+                    <option value="">Válassz típust</option>
+                    <option th:each="type : ${fuelTypes}" th:value="${type}" th:text="${type}"></option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="button button-secondary" type="button" id="cancel-edit">Mégse</button>
+                <button class="button" type="submit" id="save-car">Mentés</button>
+            </div>
+        </form>
+    </dialog>
+</main>
+</body>
+</html>

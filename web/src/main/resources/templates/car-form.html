@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="hu" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Új autó felvitele</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="page form-page">
+    <header class="page-header">
+        <h1>Új autó felvitele</h1>
+    </header>
+
+    <form class="card car-form" method="post" th:action="@{/cars}" th:object="${car}">
+        <ul class="form-errors" th:if="${#fields.hasAnyErrors()}" role="alert">
+            <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+        </ul>
+        <div class="field">
+            <label for="brand">Márka</label>
+            <input type="text" th:field="*{brand}" required>
+        </div>
+        <div class="field">
+            <label for="model">Modell</label>
+            <input type="text" th:field="*{model}" required>
+        </div>
+        <div class="field">
+            <label for="horsepower">Lóerő</label>
+            <input type="number" th:field="*{horsepower}" min="1" step="1" required>
+        </div>
+        <div class="field">
+            <label for="manufactureDate">Gyártási dátum</label>
+            <input type="date" th:field="*{manufactureDate}" required>
+        </div>
+        <div class="field">
+            <label for="fuelType">Üzemanyag</label>
+            <select th:field="*{fuelType}" required>
+                <option value="">Válassz típust</option>
+                <option th:each="type : ${fuelTypes}" th:value="${type}" th:text="${type}"></option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <a class="back-link" th:href="@{/cars}">Vissza az autókhoz</a>
+            <button class="button" type="submit">Mentés</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>
